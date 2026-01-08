@@ -1,21 +1,24 @@
-package com.heb.driverpay.repos;
+package com.bgiddens.sdr.repository;
 
-import com.heb.driverpay.utils.ApplicationContextProvider;
 import com.querydsl.core.types.dsl.EntityPathBase;
-import jakarta.annotation.Nonnull;
 import java.time.LocalDate;
+import java.util.Objects;
+
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
 import org.springframework.data.querydsl.binding.QuerydslBindings;
+import org.springframework.web.context.ContextLoader;
 
-public interface CustomBinderCustomizer<Q extends EntityPathBase<?>>
-    extends QuerydslBinderCustomizer<Q> {
-  @Override
-  default void customize(QuerydslBindings bindings, @Nonnull Q root) {
-    var bindingService = ApplicationContextProvider.getBean(BindingCustomizationService.class);
-    bindings.bind(String.class).all(bindingService::processStringPath);
-    bindings.bind(LocalDate.class).all(bindingService::processComparablePath);
-    bindings.bind(Integer.class).all(bindingService::processNumberPath);
-    bindings.bind(Float.class).all(bindingService::processNumberPath);
-    bindings.bind(Double.class).all(bindingService::processNumberPath);
-  }
+public interface CustomBinderCustomizer<Q extends EntityPathBase<?>> extends QuerydslBinderCustomizer<@NonNull Q> {
+
+	@Override
+	default void customize(QuerydslBindings bindings, Q root) {
+		final var bindingCustomizationService = Objects.requireNonNull(ContextLoader.getCurrentWebApplicationContext())
+				.getBean(BindingCustomizationService.class);
+		bindings.bind(String.class).all(bindingCustomizationService::processStringPath);
+		bindings.bind(LocalDate.class).all(bindingCustomizationService::processComparablePath);
+		bindings.bind(Integer.class).all(bindingCustomizationService::processNumberPath);
+		bindings.bind(Float.class).all(bindingCustomizationService::processNumberPath);
+		bindings.bind(Double.class).all(bindingCustomizationService::processNumberPath);
+	}
 }
