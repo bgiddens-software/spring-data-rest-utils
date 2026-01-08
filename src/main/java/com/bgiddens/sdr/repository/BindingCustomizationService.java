@@ -9,55 +9,50 @@ import com.querydsl.core.types.dsl.ComparableExpression;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.core.types.dsl.StringExpression;
 import com.querydsl.core.types.dsl.StringPath;
-import java.util.ArrayList;
+import org.springframework.web.context.ContextLoader;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 public class BindingCustomizationService {
 
-	public BindingCustomizationService(ParamOperationCustomization paramOperationCustomization) {
-		this.paramOperationMap = paramOperationCustomization;
-	}
-
-	private final ParamOperationCustomization paramOperationMap;
-
-	public Optional<Predicate> processStringPath(StringPath path, Collection<? extends String> values) {
-		final var ops = this.paramOperationMap.getOrDefault(path.getMetadata().getName().toLowerCase(), new ArrayList<>());
+	public static Optional<Predicate> processStringPath(StringPath path, Collection<? extends String> values) {
+		final var ops = ContextLoader.getCurrentWebApplicationContext().getBean(ParameterOperationService.class)
+				.get(path.getMetadata().getName().toLowerCase());
 		if (values.isEmpty()) {
 			return Optional.empty();
 		}
-		return Optional.of(expressionFor(path, ops, values, ParamOperationCustomization.OperationType.LIKE_IGNORE_CASE,
-				this::expressionForString));
+		return Optional.of(expressionFor(path, ops, values, OperationType.LIKE_IGNORE_CASE,
+				BindingCustomizationService::expressionForString));
 	}
 
-	public <T extends Comparable> Optional<Predicate> processComparablePath(Path<T> rawPath,
+	public static <T extends Comparable> Optional<Predicate> processComparablePath(Path<T> rawPath,
 			Collection<? extends T> values) {
-		final var ops = this.paramOperationMap.getOrDefault(rawPath.getMetadata().getName().toLowerCase(),
-				new ArrayList<>());
+		final var ops = ContextLoader.getCurrentWebApplicationContext().getBean(ParameterOperationService.class)
+				.get(rawPath.getMetadata().getName().toLowerCase());
 		if (values.isEmpty()) {
 			return Optional.empty();
 		}
 		var path = (ComparableExpression) rawPath;
-		return Optional.of(
-				expressionFor(path, ops, values, ParamOperationCustomization.OperationType.EQ, this::expressionForComparable));
+		return Optional
+				.of(expressionFor(path, ops, values, OperationType.EQ, BindingCustomizationService::expressionForComparable));
 	}
 
-	public <T extends Number & Comparable<?>> Optional<Predicate> processNumberPath(Path<T> rawPath,
+	public static <T extends Number & Comparable<?>> Optional<Predicate> processNumberPath(Path<T> rawPath,
 			Collection<? extends T> values) {
-		final var ops = this.paramOperationMap.getOrDefault(rawPath.getMetadata().getName().toLowerCase(),
-				new ArrayList<>());
+		final var ops = ContextLoader.getCurrentWebApplicationContext().getBean(ParameterOperationService.class)
+				.get(rawPath.getMetadata().getName().toLowerCase());
 		if (values.isEmpty()) {
 			return Optional.empty();
 		}
 		var path = (NumberExpression) rawPath;
 		return Optional
-				.of(expressionFor(path, ops, values, ParamOperationCustomization.OperationType.EQ, this::expressionForNumber));
+				.of(expressionFor(path, ops, values, OperationType.EQ, BindingCustomizationService::expressionForNumber));
 	}
 
-	protected <T, P extends Expression<T>> Predicate expressionFor(P path,
-			List<ParamOperationCustomization.OperationType> ops, Collection<? extends T> values,
-			ParamOperationCustomization.OperationType defaultOperation, ExpressionFunction<P, T> expressionFunction) {
+	protected static <T, P extends Expression<T>> Predicate expressionFor(P path, List<OperationType> ops,
+			Collection<? extends T> values, OperationType defaultOperation, ExpressionFunction<P, T> expressionFunction) {
 		var res = new BooleanBuilder();
 		var valuesAsList = (T[]) values.toArray();
 		for (int i = 0; i < values.size(); i++) {
@@ -67,8 +62,8 @@ public class BindingCustomizationService {
 		return res.getValue();
 	}
 
-	protected Optional<BooleanExpression> expressionForString(ParamOperationCustomization.OperationType op,
-			StringExpression path, String value) {
+	protected static Optional<BooleanExpression> expressionForString(OperationType op, StringExpression path,
+			String value) {
 		return switch (op) {
 			case LIKE -> Optional.of(path.contains(value));
 			case LIKE_IGNORE_CASE -> Optional.of(path.containsIgnoreCase(value));
@@ -76,8 +71,8 @@ public class BindingCustomizationService {
 		};
 	}
 
-	protected <T extends Comparable<? super T>> Optional<BooleanExpression> expressionForComparable(
-			ParamOperationCustomization.OperationType op, ComparableExpression<T> path, T value) {
+	protected static <T extends Comparable<? super T>> Optional<BooleanExpression> expressionForComparable(
+			OperationType op, ComparableExpression<T> path, T value) {
 		return switch (op) {
 			case EQ -> Optional.of(path.eq(value));
 			case GT -> Optional.of(path.gt(value));
@@ -93,8 +88,8 @@ public class BindingCustomizationService {
 		};
 	}
 
-	protected <T extends Number & Comparable<?>> Optional<BooleanExpression> expressionForNumber(
-			ParamOperationCustomization.OperationType op, NumberExpression<T> path, T value) {
+	protected static <T extends Number & Comparable<?>> Optional<BooleanExpression> expressionForNumber(OperationType op,
+			NumberExpression<T> path, T value) {
 		return switch (op) {
 			case EQ -> Optional.of(path.eq(value));
 			case GT -> Optional.of(path.gt(value));
@@ -112,6 +107,6 @@ public class BindingCustomizationService {
 
 	@FunctionalInterface
 	protected interface ExpressionFunction<P, T> {
-		Optional<BooleanExpression> apply(ParamOperationCustomization.OperationType operationType, P path, T target);
+		Optional<BooleanExpression> apply(OperationType operationType, P path, T target);
 	}
 }

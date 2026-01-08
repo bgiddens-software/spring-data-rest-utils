@@ -1,24 +1,23 @@
 package com.bgiddens.sdr.repository;
 
 import jakarta.annotation.PostConstruct;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import org.springframework.web.context.request.NativeWebRequest;
 
-public class ParamOperationCustomization extends HashMap<String, List<ParamOperationCustomization.OperationType>> {
+public class DefaultParamOperationService extends HashMap<String, List<OperationType>>
+		implements ParameterOperationService {
 
-	public ParamOperationCustomization(String parameterOperationPrefix, NativeWebRequest webRequest) {
+	public DefaultParamOperationService(String parameterOperationPrefix, NativeWebRequest webRequest) {
 		this.parameterOperationPrefix = parameterOperationPrefix;
 		this.webRequest = webRequest;
 	}
 
 	private final String parameterOperationPrefix;
 	private final NativeWebRequest webRequest;
-
-	public enum OperationType {
-		EQ, GT, LT, GE, LE, EQ_OR_NULL, GT_OR_NULL, LT_OR_NULL, GE_OR_NULL, LE_OR_NULL, LIKE, LIKE_IGNORE_CASE,
-	}
 
 	@PostConstruct
 	public void init() {
@@ -28,5 +27,10 @@ public class ParamOperationCustomization extends HashMap<String, List<ParamOpera
 						Arrays.stream(values).map(String::toUpperCase).map(OperationType::valueOf).toList());
 			}
 		});
+	}
+
+	@Override
+	public List<OperationType> get(String parameter) {
+		return super.getOrDefault(parameter, new ArrayList<>());
 	}
 }

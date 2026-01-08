@@ -1,8 +1,10 @@
 package com.bgiddens.sdr.config;
 
 import com.bgiddens.sdr.repository.BindingCustomizationService;
-import com.bgiddens.sdr.repository.ParamOperationCustomization;
+import com.bgiddens.sdr.repository.DefaultParamOperationService;
+import com.bgiddens.sdr.repository.ParameterOperationService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -19,14 +21,9 @@ public class RepositoryAutoConfiguration {
 
 	@Bean
 	@Scope(value = SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-	public ParamOperationCustomization paramOperationCustomization(RepositoryConfig repositoryConfig,
+	@ConditionalOnMissingBean
+	public ParameterOperationService defaultParameterOperationService(RepositoryConfig repositoryConfig,
 			NativeWebRequest webRequest) {
-		return new ParamOperationCustomization(repositoryConfig.getParameterOperationPrefix(), webRequest);
-	}
-
-	@Bean
-	public BindingCustomizationService bindingCustomizationService(
-			ParamOperationCustomization paramOperationCustomization) {
-		return new BindingCustomizationService(paramOperationCustomization);
+		return new DefaultParamOperationService(repositoryConfig.getParameterOperationPrefix(), webRequest);
 	}
 }
