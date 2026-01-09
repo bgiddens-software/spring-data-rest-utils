@@ -88,12 +88,6 @@
       <classifier>jakarta</classifier>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.42</version>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -155,6 +149,12 @@
       <version>2.3.232</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.42</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <dependencyManagement>
     <dependencies>
@@ -189,6 +189,7 @@
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
               <version>1.18.42</version>
+              <scope>test</scope>
             </annotationProcessorPath>
             <annotationProcessorPath>
               <groupId>com.querydsl</groupId>

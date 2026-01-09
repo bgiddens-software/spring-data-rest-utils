@@ -3,14 +3,16 @@ package com.bgiddens.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import lombok.AllArgsConstructor;
 
 /**
  * An accessor that reflectively retrieves a value via a standard accessor method - e.g., getValue() for a field named
  * value.
  */
-@AllArgsConstructor
 public class InferredMethodReflectiveAccessor<P, T> implements ReflectiveAccessor<P, T> {
+
+	public InferredMethodReflectiveAccessor(Method method) {
+		this.method = method;
+	}
 
 	private final Method method;
 

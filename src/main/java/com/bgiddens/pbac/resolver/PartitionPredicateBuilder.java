@@ -1,16 +1,21 @@
 package com.bgiddens.pbac.resolver;
 
+import com.bgiddens.pbac.PartitionSecurityContextHolder;
 import com.bgiddens.pbac.access.AccessLevel;
 import com.bgiddens.pbac.access.AccessRegistry;
-import com.bgiddens.pbac.PartitionSecurityContextHolder;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Predicate;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-@RequiredArgsConstructor
 public class PartitionPredicateBuilder {
+
+	public PartitionPredicateBuilder(PartitionPathResolver partitionPathResolver, AccessRegistry accessRegistry,
+			PartitionSecurityContextHolder partitionSecurityContextHolder) {
+		this.partitionPathResolver = partitionPathResolver;
+		this.accessRegistry = accessRegistry;
+		this.partitionSecurityContextHolder = partitionSecurityContextHolder;
+	}
 
 	private final PartitionPathResolver partitionPathResolver;
 	private final AccessRegistry accessRegistry;

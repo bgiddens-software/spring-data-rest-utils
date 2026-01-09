@@ -4,9 +4,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "bgiddens.sdr.repository")
 public class RepositoryConfig {
-	private final String parameterOperationPrefix = "OP_";
+	private String parameterOperationPrefix = "OP_";
 
 	public String getParameterOperationPrefix() {
 		return parameterOperationPrefix;
+	}
+
+	public void setParameterOperationPrefix(String parameterOperationPrefix) {
+		this.parameterOperationPrefix = parameterOperationPrefix;
 	}
 }

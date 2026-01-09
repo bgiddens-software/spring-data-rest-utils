@@ -1,15 +1,24 @@
 package com.bgiddens.pbac.access;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
 import java.util.Set;
 
-@Getter
-@AllArgsConstructor
 public class PartitionedAccessLevel {
+
+	public PartitionedAccessLevel(AccessLevel accessLevel, Set<String> partitions) {
+		this.accessLevel = accessLevel;
+		this.partitions = partitions;
+	}
+
 	private final AccessLevel accessLevel;
 	private final Set<String> partitions;
+
+	public AccessLevel getAccessLevel() {
+		return accessLevel;
+	}
+
+	public Set<String> getPartitions() {
+		return partitions;
+	}
 
 	public static PartitionedAccessLevel full() {
 		return new PartitionedAccessLevel(AccessLevel.FULL, Set.of());

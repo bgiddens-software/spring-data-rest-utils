@@ -3,7 +3,6 @@ package com.bgiddens.pbac;
 import com.bgiddens.pbac.access.AccessLevel;
 import com.bgiddens.pbac.access.AccessRegistry;
 import com.bgiddens.pbac.resolver.PartitionResolver;
-import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.support.RepositoryInvoker;
@@ -14,8 +13,18 @@ import org.springframework.util.MultiValueMap;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
-@AllArgsConstructor
 public class PartitionAuthorizingRepositoryInvoker implements RepositoryInvoker {
+
+	public PartitionAuthorizingRepositoryInvoker(RepositoryInvoker delegate, AccessRegistry accessRegistry,
+			Class<?> domainType, PartitionSecurityContextHolder partitionSecurityContextHolder,
+			PartitionResolver partitionResolver, boolean reverifyDelete) {
+		this.delegate = delegate;
+		this.accessRegistry = accessRegistry;
+		this.domainType = domainType;
+		this.partitionSecurityContextHolder = partitionSecurityContextHolder;
+		this.partitionResolver = partitionResolver;
+		this.reverifyDelete = reverifyDelete;
+	}
 
 	private final RepositoryInvoker delegate;
 	private final AccessRegistry accessRegistry;

@@ -1,13 +1,17 @@
 package com.bgiddens.reflection;
 
-import java.lang.reflect.Method;
-import java.util.Objects;
-import lombok.AllArgsConstructor;
-import lombok.NonNull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.aop.MethodMatcher;
 
-@AllArgsConstructor
+import java.lang.reflect.Method;
+import java.util.Objects;
+
 public class ClassAndNameMethodMatcher implements MethodMatcher {
+
+	public ClassAndNameMethodMatcher(String methodName, Class<?> clazz) {
+		this.methodName = methodName;
+		this.clazz = clazz;
+	}
 
 	private String methodName;
 	private Class<?> clazz;

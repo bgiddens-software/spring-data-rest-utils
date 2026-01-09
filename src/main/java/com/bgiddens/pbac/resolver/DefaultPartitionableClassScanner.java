@@ -1,15 +1,17 @@
 package com.bgiddens.pbac.resolver;
 
 import com.bgiddens.pbac.Partitionable;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
-@RequiredArgsConstructor
 public class DefaultPartitionableClassScanner implements PartitionableClassScanner {
+
+	public DefaultPartitionableClassScanner(String packageName) {
+		this.packageName = packageName;
+	}
 
 	private final String packageName;
 

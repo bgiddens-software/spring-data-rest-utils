@@ -1,15 +1,17 @@
 package com.bgiddens.pbac;
 
 import com.bgiddens.pbac.access.AuthenticationPartitionResolver;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-@AllArgsConstructor
 public class PartitionSecurityContextHolder {
+
+	public PartitionSecurityContextHolder(AuthenticationPartitionResolver authenticationPartitionResolver) {
+		this.authenticationPartitionResolver = authenticationPartitionResolver;
+	}
 
 	private final AuthenticationPartitionResolver authenticationPartitionResolver;
 	private final Map<String, Collection<Object>> partitions = new HashMap<>();

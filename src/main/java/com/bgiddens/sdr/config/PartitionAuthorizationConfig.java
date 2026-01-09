@@ -1,11 +1,7 @@
 package com.bgiddens.sdr.config;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Getter
-@Setter
 @ConfigurationProperties(prefix = "bgiddens.sdr.pbac")
 public class PartitionAuthorizationConfig {
 	/**
@@ -13,4 +9,12 @@ public class PartitionAuthorizationConfig {
 	 * request and is generally unnecessary because SDR invokes findById first.
 	 */
 	private Boolean checkDelete = false;
+
+	public Boolean getCheckDelete() {
+		return checkDelete;
+	}
+
+	public void setCheckDelete(Boolean checkDelete) {
+		this.checkDelete = checkDelete;
+	}
 }

@@ -2,10 +2,12 @@ package com.bgiddens.reflection;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class MethodReflectiveAccessor<P, T> implements ReflectiveAccessor<P, T> {
+
+	public MethodReflectiveAccessor(Method method) {
+		this.method = method;
+	}
 
 	private final Method method;
 

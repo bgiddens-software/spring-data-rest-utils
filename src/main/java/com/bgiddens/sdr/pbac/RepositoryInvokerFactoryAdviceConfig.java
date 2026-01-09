@@ -1,12 +1,11 @@
 package com.bgiddens.sdr.pbac;
 
-import com.bgiddens.pbac.access.AccessRegistry;
-import com.bgiddens.sdr.config.PartitionAuthorizationConfig;
 import com.bgiddens.pbac.PartitionAuthorizingRepositoryInvoker;
 import com.bgiddens.pbac.PartitionSecurityContextHolder;
+import com.bgiddens.pbac.access.AccessRegistry;
 import com.bgiddens.pbac.resolver.PartitionResolver;
 import com.bgiddens.reflection.ClassAndNameMethodMatcher;
-import lombok.AllArgsConstructor;
+import com.bgiddens.sdr.config.PartitionAuthorizationConfig;
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.springframework.aop.Advisor;
@@ -16,8 +15,16 @@ import org.springframework.aop.support.ComposablePointcut;
 import org.springframework.data.repository.support.RepositoryInvoker;
 import org.springframework.data.repository.support.RepositoryInvokerFactory;
 
-@AllArgsConstructor
 public class RepositoryInvokerFactoryAdviceConfig {
+
+	public RepositoryInvokerFactoryAdviceConfig(AccessRegistry accessRegistry,
+			PartitionAuthorizationConfig partitionAuthorizationConfig,
+			PartitionSecurityContextHolder partitionSecurityContextHolder, PartitionResolver partitionResolver) {
+		this.accessRegistry = accessRegistry;
+		this.partitionAuthorizationConfig = partitionAuthorizationConfig;
+		this.partitionSecurityContextHolder = partitionSecurityContextHolder;
+		this.partitionResolver = partitionResolver;
+	}
 
 	private final AccessRegistry accessRegistry;
 	private final PartitionAuthorizationConfig partitionAuthorizationConfig;

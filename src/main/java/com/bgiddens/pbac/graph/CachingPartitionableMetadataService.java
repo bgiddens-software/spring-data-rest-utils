@@ -2,7 +2,6 @@ package com.bgiddens.pbac.graph;
 
 import com.bgiddens.pbac.PartitionResolverConfig;
 import com.bgiddens.pbac.Partitionable;
-import com.bgiddens.pbac.resolver.PartitionAccessFunction;
 import com.bgiddens.pbac.exceptions.PartitionConfigurationException;
 import com.bgiddens.pbac.resolver.PartitionableClassScanner;
 import com.bgiddens.reflection.FieldReflectiveAccessor;
@@ -11,20 +10,10 @@ import com.bgiddens.reflection.MethodReflectiveAccessor;
 import com.bgiddens.reflection.ReflectionUtils;
 import com.bgiddens.reflection.ReflectiveAccessor;
 import com.mysema.commons.lang.Pair;
-import com.querydsl.core.types.PathMetadataFactory;
-import com.querydsl.core.types.dsl.PathBuilder;
-import com.querydsl.core.types.dsl.SimpleExpression;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
-import org.springframework.data.querydsl.EntityPathResolver;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -38,10 +27,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-@AllArgsConstructor
 public class CachingPartitionableMetadataService implements PartitionableMetadataService {
+
+	public CachingPartitionableMetadataService(PartitionableClassScanner scanner,
+			PartitionResolverConfig partitionResolverConfig) {
+		this.scanner = scanner;
+		this.partitionResolverConfig = partitionResolverConfig;
+	}
 
 	private final PartitionableClassScanner scanner;
 	private final PartitionResolverConfig partitionResolverConfig;

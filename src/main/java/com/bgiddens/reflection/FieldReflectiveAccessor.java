@@ -1,10 +1,12 @@
 package com.bgiddens.reflection;
 
 import java.lang.reflect.Field;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 public class FieldReflectiveAccessor<P, T> implements ReflectiveAccessor<P, T> {
+
+	public FieldReflectiveAccessor(Field field) {
+		this.field = field;
+	}
 
 	private final Field field;
 
