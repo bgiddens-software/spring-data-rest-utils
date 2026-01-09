@@ -1,8 +1,9 @@
 package com.bgiddens.resolver;
 
-import com.bgiddens.pbac.Partitionable;
 import com.bgiddens.pbac.PartitionResolverConfig;
-import com.bgiddens.pbac.resolver.CachingRecursivePartitionResolver;
+import com.bgiddens.pbac.Partitionable;
+import com.bgiddens.pbac.graph.CachingPartitionableMetadataService;
+import com.bgiddens.pbac.resolver.DefaultPartitionResolver;
 import com.bgiddens.pbac.resolver.DefaultPartitionableClassScanner;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 
-public class CachingRecursivePartitionResolverTest {
+public class DefaultPartitionResolverTest {
 
 	@AllArgsConstructor
 	protected static class PartitionBasisA {
@@ -57,8 +58,9 @@ public class CachingRecursivePartitionResolverTest {
 
 		config.setForceAccess(true);
 		config.setUseInferredMethodAccessor(false);
-		var resolver = new CachingRecursivePartitionResolver(scanner, config);
-		resolver.cachePartitionableObjects();
+		var metadataService = new CachingPartitionableMetadataService(scanner, config);
+		metadataService.cachePartitionableObjects();
+		var resolver = new DefaultPartitionResolver(metadataService);
 
 		var partitionableA = new PartitionableA(new PartitionBasisA("A1"));
 		var partitionableB = new PartitionableB(List.of(new PartitionBasisA("A2"), new PartitionBasisA("A3")),

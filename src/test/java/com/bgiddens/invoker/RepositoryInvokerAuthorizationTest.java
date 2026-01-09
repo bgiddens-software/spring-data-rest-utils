@@ -1,11 +1,11 @@
 package com.bgiddens.invoker;
 
-import com.bgiddens.pbac.access.AccessRegistry;
-import com.bgiddens.pbac.access.PartitionedAccessLevel;
 import com.bgiddens.impl.entities.Employee;
 import com.bgiddens.impl.repos.EmployeeRepo;
 import com.bgiddens.pbac.PartitionSecurityContextHolder;
-import com.bgiddens.pbac.resolver.CachingRecursivePartitionResolver;
+import com.bgiddens.pbac.access.AccessRegistry;
+import com.bgiddens.pbac.access.PartitionedAccessLevel;
+import com.bgiddens.pbac.resolver.PartitionResolver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -42,7 +42,7 @@ public class RepositoryInvokerAuthorizationTest {
 
 	@MockitoBean private AccessRegistry accessRegistry;
 
-	@MockitoBean private CachingRecursivePartitionResolver partitionResolver;
+	@MockitoBean private PartitionResolver partitionResolver;
 
 	@MockitoSpyBean private EmployeeRepo employeeRepo;
 

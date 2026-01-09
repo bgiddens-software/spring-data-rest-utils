@@ -1,7 +1,10 @@
-package com.bgiddens.pbac.resolver;
+package com.bgiddens.pbac.graph;
 
-import com.bgiddens.pbac.Partitionable;
 import com.bgiddens.pbac.PartitionResolverConfig;
+import com.bgiddens.pbac.Partitionable;
+import com.bgiddens.pbac.resolver.PartitionAccessFunction;
+import com.bgiddens.pbac.exceptions.PartitionConfigurationException;
+import com.bgiddens.pbac.resolver.PartitionableClassScanner;
 import com.bgiddens.reflection.FieldReflectiveAccessor;
 import com.bgiddens.reflection.InferredMethodReflectiveAccessor;
 import com.bgiddens.reflection.MethodReflectiveAccessor;
@@ -11,13 +14,12 @@ import com.mysema.commons.lang.Pair;
 import com.querydsl.core.types.PathMetadataFactory;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SimpleExpression;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.data.querydsl.EntityPathResolver;
-import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -34,78 +36,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @AllArgsConstructor
-public class CachingRecursivePartitionResolver implements PartitionResolver, PartitionPathResolver {
+public class CachingPartitionableMetadataService implements PartitionableMetadataService {
 
 	private final PartitionableClassScanner scanner;
 	private final PartitionResolverConfig partitionResolverConfig;
-	private final EntityPathResolver entityPathResolver = new SimpleEntityPathResolver("");
+	private final Map<Class<?>, Map<String, Set<PartitionableMetadata>>> cache = new HashMap<>();
 
-	@AllArgsConstructor
-	@Getter
-	protected static final class PartitionableMetadata {
-		@NonNull private Class<?> parentClass;
-		@NonNull private ReflectiveAccessor<Object, Object> accessor;
-		@NonNull private String name;
-		@NonNull private Class<?> type;
-		@NonNull private String queryPath;
-		@NonNull private Boolean isCollection;
-		@NonNull private String basis;
-		@Nullable
-		@Setter private PartitionableMetadata next;
-
-		public String getQueryPath() {
-			return this.queryPath.isBlank() ? this.name : this.queryPath;
-		}
-	}
-
-	@AllArgsConstructor
-	@Getter
-	protected static final class PartitionAccessorAndExpressions {
-		@NonNull private PartitionAccessFunction partitionAccessor;
-		@Nullable private Collection<SimpleExpression<Object>> partitionExpressions;
-
-		protected static PartitionAccessorAndExpressions of(PartitionAccessFunction partitionAccessFunction,
-				Collection<SimpleExpression<Object>> expressions) {
-			return new PartitionAccessorAndExpressions(partitionAccessFunction, expressions);
-		}
-	}
-
-	private final Map<Class<?>, Map<String, PartitionAccessorAndExpressions>> cache = new HashMap<>();
-
-	private PathBuilder<Object> buildPartitionExpression(PathBuilder<?> prior, PartitionableMetadata metadata) {
-		final PathBuilder<Object> next = (metadata.getIsCollection())
-				? prior.getCollection(metadata.getQueryPath(), Object.class).any()
-				: prior.get(metadata.getQueryPath(), Object.class);
-		return metadata.getNext() == null ? next : buildPartitionExpression(next, metadata.getNext());
-	}
-
-	private SimpleExpression<Object> buildPartitionExpression(PartitionableMetadata metadata) {
-		try {
-			final var qEntity = entityPathResolver.createPath(metadata.getParentClass());
-			final var builder = new PathBuilder<>(metadata.getParentClass(), PathMetadataFactory.forDelegate(qEntity));
-			return buildPartitionExpression(builder, metadata);
-		} catch (IllegalArgumentException e) {
-			return null;
-		}
-	}
-
-	private PartitionAccessFunction buildAccessor(PartitionableMetadata metadata) {
-		final var accessor = getPartitionsInvoker(metadata.getAccessor());
-		return metadata.getNext() == null ? accessor : compose(accessor, buildAccessor(metadata.getNext()));
-	}
-
-	private PartitionAccessFunction buildAccessor(List<PartitionableMetadata> metadataList) {
-		return metadataList.stream().map(this::buildAccessor).reduce((ignored) -> new HashSet<Object>(),
-				(accessor1, accessor2) -> (obj) -> {
-					final var res = new HashSet<>();
-					res.addAll(accessor1.apply(obj));
-					res.addAll(accessor2.apply(obj));
-					return res;
-				});
+	@Override
+	public Set<PartitionableMetadata> getMetadataFor(Class<?> clazz, String basis) {
+		return (cache.containsKey(clazz)) ? cache.get(clazz).getOrDefault(basis, null) : null;
 	}
 
 	public void cachePartitionableObjects() throws PartitionConfigurationException {
@@ -124,23 +68,9 @@ public class CachingRecursivePartitionResolver implements PartitionResolver, Par
 					}
 					traverse(metadata.getType(), depth + 1, metadata);
 				});
-				cache.get(clazz).put(basis, PartitionAccessorAndExpressions.of(buildAccessor(metadataList),
-						metadataList.stream().map(this::buildPartitionExpression).toList()));
+				cache.get(clazz).put(basis, new HashSet<>(metadataList));
 			});
 		}
-	}
-
-	private PartitionAccessFunction compose(PartitionAccessFunction step, PartitionAccessFunction next) {
-		return obj -> next.apply(step.apply(obj));
-	}
-
-	public Collection<Object> resolvePartitions(String basis, Object entity) throws PartitionConfigurationException {
-		return cache.get(entity.getClass()).get(basis).getPartitionAccessor().apply(entity);
-	}
-
-	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(String basis, Class<?> clazz)
-			throws PartitionConfigurationException {
-		return cache.get(clazz).get(basis).getPartitionExpressions();
 	}
 
 	private MultiValueMap<String, PartitionableMetadata> getPartitionableMetadata(Class<?> clazz) {
@@ -181,23 +111,6 @@ public class CachingRecursivePartitionResolver implements PartitionResolver, Par
 		} catch (NoSuchMethodException e) {
 			throw new PartitionConfigurationException(e);
 		}
-	}
-
-	private PartitionAccessFunction getPartitionsInvoker(ReflectiveAccessor<Object, Object> accessor) {
-		return obj -> {
-			var args = (obj instanceof Collection<?> argCollection) ? argCollection.stream() : Stream.of(obj);
-			return args.flatMap(arg -> {
-				try {
-					var res = accessor.get(arg);
-					return (res instanceof Collection<?> collection) ? collection.stream() : Stream.of(res);
-				} catch (IllegalAccessException | InvocationTargetException ex) {
-					throw new PartitionConfigurationException(
-							String.format("Failed to access partitions for object of type %s using accessor %s", obj.getClass(),
-									accessor.getClass()),
-							ex);
-				}
-			}).collect(Collectors.toSet());
-		};
 	}
 
 	private Class<?> getDomainType(Type type) {

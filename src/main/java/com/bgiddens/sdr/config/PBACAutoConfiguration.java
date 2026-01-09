@@ -1,10 +1,13 @@
 package com.bgiddens.sdr.config;
 
 import com.bgiddens.pbac.PartitionResolverConfig;
+import com.bgiddens.pbac.PartitionSecurityContextHolder;
 import com.bgiddens.pbac.access.AccessRegistry;
 import com.bgiddens.pbac.access.AuthenticationPartitionResolver;
-import com.bgiddens.pbac.PartitionSecurityContextHolder;
-import com.bgiddens.pbac.resolver.CachingRecursivePartitionResolver;
+import com.bgiddens.pbac.graph.CachingPartitionableMetadataService;
+import com.bgiddens.pbac.graph.PartitionableMetadataService;
+import com.bgiddens.pbac.resolver.DefaultPartitionPathResolver;
+import com.bgiddens.pbac.resolver.DefaultPartitionResolver;
 import com.bgiddens.pbac.resolver.DefaultPartitionableClassScanner;
 import com.bgiddens.pbac.resolver.PartitionPathResolver;
 import com.bgiddens.pbac.resolver.PartitionPredicateBuilder;
@@ -22,6 +25,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.data.querydsl.SimpleEntityPathResolver;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.data.rest.webmvc.config.ResourceMetadataHandlerMethodArgumentResolver;
@@ -38,12 +42,24 @@ public class PBACAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean({ PartitionResolver.class, PartitionPathResolver.class })
-	public CachingRecursivePartitionResolver defaultPartitionResolver(PartitionableClassScanner scanner,
-			PartitionResolverConfig config) {
-		var resolver = new CachingRecursivePartitionResolver(scanner, config);
-		resolver.cachePartitionableObjects();
-		return resolver;
+	@ConditionalOnMissingBean
+	public PartitionableMetadataService cachingPartitionableMetadataService(
+			PartitionableClassScanner partitionableClassScanner, PartitionResolverConfig partitionResolverConfig) {
+		var service = new CachingPartitionableMetadataService(partitionableClassScanner, partitionResolverConfig);
+		service.cachePartitionableObjects();
+		return service;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PartitionResolver defaultPartitionResolver(PartitionableMetadataService partitionableMetadataService) {
+		return new DefaultPartitionResolver(partitionableMetadataService);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public PartitionPathResolver defaultPartitionPathResolver(PartitionableMetadataService partitionableMetadataService) {
+		return new DefaultPartitionPathResolver(partitionableMetadataService, new SimpleEntityPathResolver(""));
 	}
 
 	@Bean

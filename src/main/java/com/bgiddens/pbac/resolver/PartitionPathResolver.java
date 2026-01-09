@@ -1,5 +1,6 @@
 package com.bgiddens.pbac.resolver;
 
+import com.bgiddens.pbac.exceptions.PartitionConfigurationException;
 import com.querydsl.core.types.dsl.SimpleExpression;
 
 import java.util.Collection;
