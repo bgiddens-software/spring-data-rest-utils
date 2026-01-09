@@ -9,9 +9,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 /** Interface for read-only REST repositories with querying functionality. */
+@NoRepositoryBean
 public interface QueryingViewRepository<E, Q extends EntityPathBase<E>, I>
 		extends CustomJpaRepository<E, I>, QuerydslPredicateExecutor<E>, CustomBinderCustomizer<Q> {
 	@Override

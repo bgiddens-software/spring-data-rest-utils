@@ -30,7 +30,7 @@ public class RepositoryInvokerFactoryAdviceConfig {
 			if (res instanceof RepositoryInvoker invoker && invocation.getArguments().length == 1
 					&& invocation.getArguments()[0] instanceof Class<?> domainType) {
 				return new PartitionAuthorizingRepositoryInvoker(invoker, accessRegistry, domainType,
-						partitionSecurityContextHolder, partitionResolver, partitionAuthorizationConfig.getReverifyDelete());
+						partitionSecurityContextHolder, partitionResolver, partitionAuthorizationConfig.getCheckDelete());
 			} else {
 				throw new IllegalStateException(
 						"Repository invoker factory advice intercepted an unexpected method invocation");

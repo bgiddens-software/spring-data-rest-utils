@@ -12,5 +12,5 @@ public class PartitionAuthorizationConfig {
 	 * If true, applies authorization to invocation of repository delete methods. This incurs an additional database
 	 * request and is generally unnecessary because SDR invokes findById first.
 	 */
-	private Boolean reverifyDelete = false;
+	private Boolean checkDelete = false;
 }

@@ -4,9 +4,11 @@ import com.bgiddens.sdr.exceptions.DataIntegrityException;
 import com.bgiddens.sdr.exceptions.EntityNotFoundException;
 import jakarta.annotation.Nonnull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import java.util.Collection;
 
+@NoRepositoryBean
 public interface CustomJpaRepository<E, I> extends JpaRepository<E, I> {
 
 	@Nonnull

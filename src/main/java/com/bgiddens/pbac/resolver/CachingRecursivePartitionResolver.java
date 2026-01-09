@@ -124,8 +124,8 @@ public class CachingRecursivePartitionResolver implements PartitionResolver, Par
 					}
 					traverse(metadata.getType(), depth + 1, metadata);
 				});
-				cache.get(clazz).put(basis,
-						PartitionAccessorAndExpressions.of(buildAccessor(metadataList), metadataList.stream().map(this::buildPartitionExpression).toList()));
+				cache.get(clazz).put(basis, PartitionAccessorAndExpressions.of(buildAccessor(metadataList),
+						metadataList.stream().map(this::buildPartitionExpression).toList()));
 			});
 		}
 	}
