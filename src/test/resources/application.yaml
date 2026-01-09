@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:db;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password: sa
+    hikari:
+      schema: public
+  jpa:
+    show-sql: true
+
+bgiddens:
+  sdr:
+    pbac:
+      check-delete: true
+  partitions:
+    resolver:
+      packages: com.bgiddens.impl.entities
+    authorization:
