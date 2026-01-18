@@ -48,7 +48,8 @@ public class DefaultPartitionResolver implements PartitionResolver {
 			return args.flatMap(arg -> {
 				try {
 					var res = accessor.get(arg);
-					return (res instanceof Collection<?> collection) ? collection.stream() : Stream.of(res);
+					return (res == null) ? Stream.of()
+							: (res instanceof Collection<?> collection) ? collection.stream() : Stream.of(res);
 				} catch (IllegalAccessException | InvocationTargetException ex) {
 					throw new PartitionConfigurationException(
 							String.format("Failed to access partitions for object of type %s using accessor %s", obj.getClass(),
