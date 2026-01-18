@@ -8,6 +8,7 @@ import com.bgiddens.reflection.ReflectiveAccessor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -39,7 +40,11 @@ public class DefaultPartitionResolver implements PartitionResolver {
 	}
 
 	public Collection<Object> resolvePartitions(String basis, Object entity) throws PartitionConfigurationException {
-		return buildAccessor(partitionableMetadataService.getMetadataFor(entity.getClass(), basis)).apply(entity);
+		return buildAccessor(Optional.ofNullable(partitionableMetadataService.getMetadataFor(entity.getClass(), basis))
+				.orElseThrow(() -> new PartitionConfigurationException(
+						String.format("Attempted to get partitionable metadata for basis %s and class %s, but none was found.",
+								basis, entity.getClass()))))
+				.apply(entity);
 	}
 
 	private PartitionAccessFunction getPartitionsInvoker(ReflectiveAccessor<Object, Object> accessor) {

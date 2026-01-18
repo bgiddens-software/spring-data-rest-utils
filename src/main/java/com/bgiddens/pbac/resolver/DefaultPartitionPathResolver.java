@@ -43,7 +43,7 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 			throws PartitionConfigurationException {
 		return Optional.ofNullable(partitionableMetadataService.getMetadataFor(clazz, basis))
 				.orElseThrow(() -> new PartitionConfigurationException(String.format(
-						"Attempted to get partitionable metadata for basis %s and class %s, but none was found", basis, clazz)))
+						"Attempted to get partitionable metadata for basis %s and class %s, but none was found.", basis, clazz)))
 				.stream().map(this::buildPartitionExpression).toList();
 	}
 }
