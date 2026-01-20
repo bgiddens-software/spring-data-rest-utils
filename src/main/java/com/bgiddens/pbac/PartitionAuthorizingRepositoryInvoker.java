@@ -96,7 +96,15 @@ public class PartitionAuthorizingRepositoryInvoker implements RepositoryInvoker 
 	@Override
 	public Optional<Object> invokeQueryMethod(Method method, MultiValueMap<String, ?> parameters, Pageable pageable,
 			Sort sort) {
-		return delegate.invokeQueryMethod(method, parameters, pageable, sort);
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		var accessLevel = accessRegistry.getAccessLevel(authentication, domainType, null);
+		if (accessLevel.getAccessLevel() == AccessLevel.FULL) {
+			return delegate.invokeQueryMethod(method, parameters, pageable, sort);
+		} else if (accessLevel.getAccessLevel() == AccessLevel.BY_PARTITION) {
+			throw new AccessDeniedException("Partitioned access to query methods is forbidden.");
+		} else {
+			throw new AccessDeniedException("Access denied");
+		}
 	}
 
 	@Override
