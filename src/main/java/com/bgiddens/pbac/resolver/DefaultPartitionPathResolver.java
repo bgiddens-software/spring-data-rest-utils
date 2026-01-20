@@ -9,6 +9,7 @@ import com.querydsl.core.types.dsl.SimpleExpression;
 import org.springframework.data.querydsl.EntityPathResolver;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public class DefaultPartitionPathResolver implements PartitionPathResolver {
 
@@ -40,7 +41,9 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 
 	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(String basis, Class<?> clazz)
 			throws PartitionConfigurationException {
-		return partitionableMetadataService.getMetadataFor(clazz, basis).stream().map(this::buildPartitionExpression)
-				.toList();
+		return Optional.ofNullable(partitionableMetadataService.getMetadataFor(clazz, basis))
+				.orElseThrow(() -> new PartitionConfigurationException(String.format(
+						"Attempted to get partitionable metadata for basis %s and class %s, but none was found.", basis, clazz)))
+				.stream().map(this::buildPartitionExpression).toList();
 	}
 }

@@ -5,7 +5,7 @@
 
   <groupId>com.bgiddens</groupId>
   <artifactId>spring-data-rest-utils</artifactId>
-  <version>0.0.1-BETA</version>
+  <version>0.0.2-BETA</version>
 
   <name>Utils for Spring Data REST</name>
   <description>Utilities for Spring Data REST</description>

@@ -17,7 +17,7 @@ public class DefaultPartitionableClassScanner implements PartitionableClassScann
 
 	private Class<?> getClassForBeanDefinition(BeanDefinition beanDefinition) {
 		try {
-			return ClassLoader.getSystemClassLoader().loadClass(beanDefinition.getBeanClassName());
+			return getClass().getClassLoader().loadClass(beanDefinition.getBeanClassName());
 		} catch (ClassNotFoundException e) {
 			throw new RuntimeException(
 					String.format("Class %s not found by system class loader", beanDefinition.getBeanClassName()), e);
