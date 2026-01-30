@@ -6,6 +6,7 @@ import com.bgiddens.pbac.graph.PartitionableMetadataService;
 import com.querydsl.core.types.PathMetadataFactory;
 import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.core.types.dsl.SimpleExpression;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.querydsl.EntityPathResolver;
 
 import java.util.Collection;
@@ -39,7 +40,7 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 		}
 	}
 
-	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(String basis, Class<?> clazz)
+	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(@NonNull String basis, @NonNull Class<?> clazz)
 			throws PartitionConfigurationException {
 		return Optional.ofNullable(partitionableMetadataService.getMetadataFor(clazz, basis))
 				.orElseThrow(() -> new PartitionConfigurationException(String.format(
