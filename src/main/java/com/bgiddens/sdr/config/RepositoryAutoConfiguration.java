@@ -1,6 +1,5 @@
 package com.bgiddens.sdr.config;
 
-import com.bgiddens.sdr.repository.BindingCustomizationService;
 import com.bgiddens.sdr.repository.DefaultParamOperationService;
 import com.bgiddens.sdr.repository.ParameterOperationService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
