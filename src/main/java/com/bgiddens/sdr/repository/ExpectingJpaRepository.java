@@ -9,7 +9,7 @@ import org.springframework.data.repository.NoRepositoryBean;
 import java.util.Collection;
 
 @NoRepositoryBean
-public interface CustomJpaRepository<E, I> extends JpaRepository<E, I> {
+public interface ExpectingJpaRepository<E, I> extends JpaRepository<E, I> {
 
 	@Nonnull
 	default E expectById(@Nonnull I id) {

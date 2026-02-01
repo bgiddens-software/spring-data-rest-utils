@@ -40,8 +40,8 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 		}
 	}
 
-	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(@NonNull String basis, @NonNull Class<?> clazz)
-			throws PartitionConfigurationException {
+	public Collection<SimpleExpression<Object>> resolvePartitionExpressions(@NonNull String basis,
+			@NonNull Class<?> clazz) throws PartitionConfigurationException {
 		return Optional.ofNullable(partitionableMetadataService.getMetadataFor(clazz, basis))
 				.orElseThrow(() -> new PartitionConfigurationException(String.format(
 						"Attempted to get partitionable metadata for basis %s and class %s, but none was found.", basis, clazz)))

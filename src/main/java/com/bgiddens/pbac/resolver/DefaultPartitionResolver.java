@@ -40,7 +40,8 @@ public class DefaultPartitionResolver implements PartitionResolver {
 		return obj -> next.apply(step.apply(obj));
 	}
 
-	public Collection<Object> resolvePartitions(@NonNull String basis, @NonNull Object entity) throws PartitionConfigurationException {
+	public Collection<Object> resolvePartitions(@NonNull String basis, @NonNull Object entity)
+			throws PartitionConfigurationException {
 		return buildAccessor(Optional.ofNullable(partitionableMetadataService.getMetadataFor(entity.getClass(), basis))
 				.orElseThrow(() -> new PartitionConfigurationException(
 						String.format("Attempted to get partitionable metadata for basis %s and class %s, but none was found.",

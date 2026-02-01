@@ -3,8 +3,6 @@ package com.bgiddens.sdr.repository;
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import jakarta.annotation.Nonnull;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -12,10 +10,13 @@ import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.rest.core.annotation.RestResource;
 
+import java.util.List;
+import java.util.Optional;
+
 /** Interface for read-only REST repositories with querying functionality. */
 @NoRepositoryBean
 public interface QueryingViewRepository<E, Q extends EntityPathBase<E>, I>
-		extends CustomJpaRepository<E, I>, QuerydslPredicateExecutor<E>, CustomBinderCustomizer<Q> {
+		extends ExpectingJpaRepository<E, I>, QuerydslPredicateExecutor<E>, QueryingBinderCustomizer<Q> {
 	@Override
 	@RestResource(exported = true)
 	@Nonnull
