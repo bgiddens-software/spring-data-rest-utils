@@ -56,15 +56,16 @@ public class DefaultParamOperationService extends HashMap<String, List<Operation
 					};
 					ops.add(op);
 				}
-				this.put(key.substring(parameterOperationPrefix.length()).toLowerCase(), ops);
+				this.put(key.toLowerCase(), ops);
 			}
 		});
 	}
 
 	@Override
 	public @NonNull Operation get(@NonNull String parameter, @NonNull Integer valueIndex) {
-		if (super.containsKey(parameter) && super.get(parameter).size() > valueIndex) {
-			return super.get(parameter).get(valueIndex);
+		final var paramLower = parameter.toLowerCase();
+		if (super.containsKey(paramLower) && super.get(paramLower).size() > valueIndex) {
+			return super.get(paramLower).get(valueIndex);
 		}
 		return new EqualTo();
 	}
