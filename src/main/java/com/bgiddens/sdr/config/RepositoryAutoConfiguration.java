@@ -1,5 +1,6 @@
 package com.bgiddens.sdr.config;
 
+import com.bgiddens.reflection.ApplicationContextHolder;
 import com.bgiddens.sdr.repository.BindingsCustomizationService;
 import com.bgiddens.sdr.repository.DefaultParamOperationService;
 import com.bgiddens.sdr.repository.ParameterOperationService;
@@ -33,5 +34,11 @@ public class RepositoryAutoConfiguration {
 	public BindingsCustomizationService queryingBindingsCustomizationService(
 			ParameterOperationService defaultParameterOperationService) {
 		return new QueryingBindingsCustomizationService(defaultParameterOperationService);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public ApplicationContextHolder applicationContextHolder() {
+		return new ApplicationContextHolder();
 	}
 }
