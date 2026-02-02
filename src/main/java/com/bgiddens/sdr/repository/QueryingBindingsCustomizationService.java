@@ -50,19 +50,14 @@ public class QueryingBindingsCustomizationService implements BindingsCustomizati
 
 	protected <T, P extends Path<T>> Optional<Predicate> expressionFor(P path, Collection<? extends T> values,
 			ExpressionFunction<P, T> expressionFunction) {
-		final var ops = parameterOperationService.get(path.getMetadata().getName().toLowerCase());
-		if (ops.size() < values.size()) {
-			throw new IllegalArgumentException(String.format(
-					"Found %s parameters but only %s operations. Check for incorrect resolution in ParameterOperationService."));
-		}
 		if (values.isEmpty()) {
 			return Optional.empty();
 		}
 		var res = new BooleanBuilder(TRUE);
 		var valuesAsList = new ArrayList<T>(values);
 		for (int i = 0; i < valuesAsList.size(); i++) {
-			final var op = ops.get(i).getSecond();
-			expressionFunction.apply(op, path, valuesAsList.get(i)).ifPresent(res::and);
+			expressionFunction.apply(parameterOperationService.get(path.getMetadata().getName().toLowerCase(), i), path,
+					valuesAsList.get(i)).ifPresent(res::and);
 		}
 		assert res.getValue() != null;
 		return Optional.of(res.getValue());

@@ -14,14 +14,14 @@ import com.bgiddens.sdr.repository.operations.Like;
 import com.bgiddens.sdr.repository.operations.LikeIgnoreCase;
 import com.bgiddens.sdr.repository.operations.Operation;
 import jakarta.annotation.PostConstruct;
-import org.springframework.data.util.Pair;
+import org.jspecify.annotations.NonNull;
 import org.springframework.web.context.request.NativeWebRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class DefaultParamOperationService extends HashMap<String, List<Pair<String, Operation>>>
+public class DefaultParamOperationService extends HashMap<String, List<Operation>>
 		implements ParameterOperationService {
 
 	public DefaultParamOperationService(String parameterOperationPrefix, NativeWebRequest webRequest) {
@@ -36,12 +36,11 @@ public class DefaultParamOperationService extends HashMap<String, List<Pair<Stri
 	public void init() {
 		webRequest.getParameterMap().forEach((key, values) -> {
 			if (!key.startsWith(parameterOperationPrefix)) {
-				final var valueCount = values.length;
-				final var ops = webRequest.getParameterMap().getOrDefault(String.format("%s%s", parameterOperationPrefix, key),
-						new String[0]);
-				final var pairs = new ArrayList<Pair<String, Operation>>();
+				final var opsParameters = webRequest.getParameterMap()
+						.getOrDefault(String.format("%s%s", parameterOperationPrefix, key), new String[0]);
+				final var ops = new ArrayList<Operation>();
 				for (int i = 0; i < values.length; i++) {
-					final var op = (i >= ops.length) ? new EqualTo() : switch (ops[i]) {
+					final var op = (i >= opsParameters.length) ? new EqualTo() : switch (opsParameters[i]) {
 						case "GT" -> new GreaterThan();
 						case "LT" -> new LessThan();
 						case "GE" -> new GreaterThanOrEqualTo();
@@ -55,15 +54,18 @@ public class DefaultParamOperationService extends HashMap<String, List<Pair<Stri
 						case "LIKE_IGNORE_CASE" -> new LikeIgnoreCase();
 						default -> new EqualTo();
 					};
-					pairs.add(Pair.of(values[i], op));
+					ops.add(op);
 				}
-				this.put(key.substring(parameterOperationPrefix.length()).toLowerCase(), pairs);
+				this.put(key.substring(parameterOperationPrefix.length()).toLowerCase(), ops);
 			}
 		});
 	}
 
 	@Override
-	public List<Pair<String, Operation>> get(String parameter) {
-		return super.getOrDefault(parameter, new ArrayList<>());
+	public @NonNull Operation get(@NonNull String parameter, @NonNull Integer valueIndex) {
+		if (super.containsKey(parameter) && super.get(parameter).size() > valueIndex) {
+			return super.get(parameter).get(valueIndex);
+		}
+		return new EqualTo();
 	}
 }

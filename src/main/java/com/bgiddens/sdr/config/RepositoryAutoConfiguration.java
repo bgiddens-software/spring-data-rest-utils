@@ -1,7 +1,9 @@
 package com.bgiddens.sdr.config;
 
+import com.bgiddens.sdr.repository.BindingsCustomizationService;
 import com.bgiddens.sdr.repository.DefaultParamOperationService;
 import com.bgiddens.sdr.repository.ParameterOperationService;
+import com.bgiddens.sdr.repository.QueryingBindingsCustomizationService;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -24,5 +26,12 @@ public class RepositoryAutoConfiguration {
 	public ParameterOperationService defaultParameterOperationService(RepositoryConfig repositoryConfig,
 			NativeWebRequest webRequest) {
 		return new DefaultParamOperationService(repositoryConfig.getParameterOperationPrefix(), webRequest);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public BindingsCustomizationService queryingBindingsCustomizationService(
+			ParameterOperationService defaultParameterOperationService) {
+		return new QueryingBindingsCustomizationService(defaultParameterOperationService);
 	}
 }
