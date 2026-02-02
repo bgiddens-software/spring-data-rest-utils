@@ -12,6 +12,8 @@ import com.bgiddens.sdr.repository.operations.LessThanOrEqualToOrNull;
 import com.bgiddens.sdr.repository.operations.LessThanOrNull;
 import com.bgiddens.sdr.repository.operations.Like;
 import com.bgiddens.sdr.repository.operations.LikeIgnoreCase;
+import com.bgiddens.sdr.repository.operations.LikeIgnoreCaseOrNull;
+import com.bgiddens.sdr.repository.operations.LikeOrNull;
 import com.bgiddens.sdr.repository.operations.Operation;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Path;
@@ -67,6 +69,8 @@ public class QueryingBindingsCustomizationService implements BindingsCustomizati
 		return switch (op) {
 			case Like ignored -> Optional.of(path.like(value));
 			case LikeIgnoreCase ignored -> Optional.of(path.likeIgnoreCase(value));
+			case LikeOrNull ignored -> Optional.of(path.isNull().or(path.like(value)));
+			case LikeIgnoreCaseOrNull ignored -> Optional.of(path.isNull().or(path.likeIgnoreCase(value)));
 			default -> expressionForComparable(op, path, value);
 		};
 	}

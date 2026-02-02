@@ -12,6 +12,8 @@ import com.bgiddens.sdr.repository.operations.LessThanOrEqualToOrNull;
 import com.bgiddens.sdr.repository.operations.LessThanOrNull;
 import com.bgiddens.sdr.repository.operations.Like;
 import com.bgiddens.sdr.repository.operations.LikeIgnoreCase;
+import com.bgiddens.sdr.repository.operations.LikeIgnoreCaseOrNull;
+import com.bgiddens.sdr.repository.operations.LikeOrNull;
 import com.bgiddens.sdr.repository.operations.Operation;
 import jakarta.annotation.PostConstruct;
 import org.jspecify.annotations.NonNull;
@@ -52,6 +54,8 @@ public class DefaultParamOperationService extends HashMap<String, List<Operation
 						case "LE_OR_NULL" -> new LessThanOrEqualToOrNull();
 						case "LIKE" -> new Like();
 						case "LIKE_IGNORE_CASE" -> new LikeIgnoreCase();
+						case "LIKE_OR_NULL" -> new LikeOrNull();
+						case "LIKE_IGNORE_CASE_OR_NULL" -> new LikeIgnoreCaseOrNull();
 						default -> new EqualTo();
 					};
 					ops.add(op);
