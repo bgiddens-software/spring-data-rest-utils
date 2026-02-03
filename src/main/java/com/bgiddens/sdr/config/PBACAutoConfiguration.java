@@ -20,12 +20,12 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.querydsl.SimpleEntityPathResolver;
+import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
 import org.springframework.data.repository.support.Repositories;
 import org.springframework.data.repository.support.RepositoryInvokerFactory;
 import org.springframework.data.rest.webmvc.config.ResourceMetadataHandlerMethodArgumentResolver;
@@ -80,12 +80,12 @@ public class PBACAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig partitioningQuerydslAwareRootResourceInformationArgumentResolverConfig(
-			ApplicationContext applicationContext, Repositories repositories,
+			QuerydslBindingsFactory querydslBindingsFactory, Repositories repositories,
 			RepositoryInvokerFactory repositoryInvokerFactory,
 			ResourceMetadataHandlerMethodArgumentResolver resourceMetadataHandlerMethodArgumentResolver,
 			ConversionService defaultConversionService, PartitionPredicateBuilder partitionPredicateBuilder) {
-		return new PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig(applicationContext, repositories,
-				repositoryInvokerFactory, resourceMetadataHandlerMethodArgumentResolver, defaultConversionService,
+		return new PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig(querydslBindingsFactory,
+				repositories, repositoryInvokerFactory, resourceMetadataHandlerMethodArgumentResolver, defaultConversionService,
 				partitionPredicateBuilder);
 	}
 

@@ -1,9 +1,10 @@
 package com.bgiddens.sdr.pbac;
 
 import com.bgiddens.pbac.resolver.PartitionPredicateBuilder;
+import org.jspecify.annotations.NonNull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.data.querydsl.QuerydslUtils;
 import org.springframework.data.querydsl.binding.QuerydslBindingsFactory;
@@ -19,11 +20,12 @@ import org.springframework.data.rest.webmvc.config.RootResourceInformationHandle
  */
 public class PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig implements BeanPostProcessor {
 
-	public PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig(ApplicationContext applicationContext,
-			Repositories repositories, RepositoryInvokerFactory repositoryInvokerFactory,
-			ResourceMetadataHandlerMethodArgumentResolver resourceMetadataHandlerMethodArgumentResolver,
-			ConversionService defaultConversionService, PartitionPredicateBuilder partitionPredicateBuilder) {
-		this.applicationContext = applicationContext;
+	public PartitioningQuerydslAwareRootResourceInformationArgumentResolverConfig(
+			@Lazy QuerydslBindingsFactory querydslBindingsFactory, @Lazy Repositories repositories,
+			@Lazy RepositoryInvokerFactory repositoryInvokerFactory,
+			@Lazy ResourceMetadataHandlerMethodArgumentResolver resourceMetadataHandlerMethodArgumentResolver,
+			@Lazy ConversionService defaultConversionService, @Lazy PartitionPredicateBuilder partitionPredicateBuilder) {
+		this.querydslBindingsFactory = querydslBindingsFactory;
 		this.repositories = repositories;
 		this.repositoryInvokerFactory = repositoryInvokerFactory;
 		this.resourceMetadataHandlerMethodArgumentResolver = resourceMetadataHandlerMethodArgumentResolver;
@@ -31,24 +33,23 @@ public class PartitioningQuerydslAwareRootResourceInformationArgumentResolverCon
 		this.partitionPredicateBuilder = partitionPredicateBuilder;
 	}
 
-	private final ApplicationContext applicationContext;
+	private final QuerydslBindingsFactory querydslBindingsFactory;
 	private final Repositories repositories;
 	private final RepositoryInvokerFactory repositoryInvokerFactory;
 	private final ResourceMetadataHandlerMethodArgumentResolver resourceMetadataHandlerMethodArgumentResolver;
 	private final ConversionService defaultConversionService;
 	private final PartitionPredicateBuilder partitionPredicateBuilder;
 
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+	public Object postProcessBeforeInitialization(Object bean, @NonNull String beanName) throws BeansException {
 		if (RootResourceInformationHandlerMethodArgumentResolver.class.isAssignableFrom(bean.getClass())) {
 			if (QuerydslUtils.QUERY_DSL_PRESENT) {
 
-				QuerydslBindingsFactory factory = applicationContext.getBean(QuerydslBindingsFactory.class);
 				QuerydslPredicateBuilder predicateBuilder = new QuerydslPredicateBuilder(defaultConversionService,
-						factory.getEntityPathResolver());
+						querydslBindingsFactory.getEntityPathResolver());
 
 				return new PartitioningQuerydslAwareRootResourceInformationHandlerMethodArgumentResolver(repositories,
-						repositoryInvokerFactory, resourceMetadataHandlerMethodArgumentResolver, predicateBuilder, factory,
-						partitionPredicateBuilder);
+						repositoryInvokerFactory, resourceMetadataHandlerMethodArgumentResolver, predicateBuilder,
+						querydslBindingsFactory, partitionPredicateBuilder);
 			}
 		}
 		return bean;
