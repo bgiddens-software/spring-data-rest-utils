@@ -2,7 +2,7 @@ package com.bgiddens.sdr.repository;
 
 import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.dsl.EntityPathBase;
-import jakarta.annotation.Nonnull;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -19,39 +19,39 @@ public interface QueryingViewRepository<E, Q extends EntityPathBase<E>, I>
 		extends ExpectingJpaRepository<E, I>, QuerydslPredicateExecutor<E>, QueryingBinderCustomizer<Q> {
 	@Override
 	@RestResource(exported = true)
-	@Nonnull
-	Page<E> findAll(@Nonnull Predicate predicate, @Nonnull Pageable pageable);
+	@NonNull
+	Page<E> findAll(@NonNull Predicate predicate, @NonNull Pageable pageable);
 
 	@Override
 	@RestResource(exported = true)
-	@Nonnull
-	Page<E> findAll(@Nonnull Pageable pageable);
+	@NonNull
+	Page<E> findAll(@NonNull Pageable pageable);
 
 	@Override
 	@RestResource(exported = false)
-	@Nonnull
-	List<E> findAll(@Nonnull Sort sort);
+	@NonNull
+	List<E> findAll(@NonNull Sort sort);
 
 	@Override
 	@RestResource(exported = false)
-	@Nonnull
+	@NonNull
 	List<E> findAll();
 
 	@Override
 	@RestResource(exported = false)
-	@Nonnull
-	<S extends E> S save(@Nonnull S entity);
+	@NonNull
+	<S extends E> S save(@NonNull S entity);
 
 	@Override
 	@RestResource(exported = true)
-	@Nonnull
-	Optional<E> findById(@Nonnull I id);
+	@NonNull
+	Optional<E> findById(@NonNull I id);
 
 	@Override
 	@RestResource(exported = false)
-	void delete(@Nonnull E entity);
+	void delete(@NonNull E entity);
 
 	@Override
 	@RestResource(exported = false)
-	void deleteById(@Nonnull I id);
+	void deleteById(@NonNull I id);
 }
