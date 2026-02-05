@@ -14,14 +14,12 @@ import com.bgiddens.pbac.resolver.PartitionPredicateBuilder;
 import com.bgiddens.pbac.resolver.PartitionResolver;
 import com.bgiddens.pbac.resolver.PartitionableClassScanner;
 import com.bgiddens.sdr.pbac.PartitioningQuerydslAwareRootResourceInformationHandlerMethodArgumentResolver;
-import com.bgiddens.sdr.pbac.RepositoryInvokerFactoryAdviceConfig;
-import org.springframework.aop.Advisor;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -38,6 +36,7 @@ import org.springframework.data.rest.webmvc.config.RootResourceInformationHandle
 @AutoConfiguration
 @EnableConfigurationProperties({ PartitionAuthorizationConfig.class, PartitionResolverConfig.class })
 @ConditionalOnProperty(value = "bgiddens.spring-data-rest-pbac.enabled", matchIfMissing = true)
+@Import(PBACAdvisorConfiguration.class)
 public final class PBACAutoConfiguration {
 
 	@Bean
@@ -101,15 +100,5 @@ public final class PBACAutoConfiguration {
 					querydslBindingsFactory, partitionPredicateBuilder);
 		}
 		return null;
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	Advisor repositoryInvokerFactoryAdvisor(ObjectFactory<AccessRegistry> accessRegistry,
-			ObjectFactory<PartitionAuthorizationConfig> partitionAuthorizationConfig,
-			ObjectFactory<PartitionSecurityContextHolder> partitionSecurityContextHolder,
-			ObjectFactory<PartitionResolver> partitionResolver) {
-		return new RepositoryInvokerFactoryAdviceConfig(accessRegistry, partitionAuthorizationConfig,
-				partitionSecurityContextHolder, partitionResolver).repositoryInvokerFactoryAdvisor();
 	}
 }
