@@ -51,7 +51,7 @@ import java.util.Optional;
  * @author Mark Paluch
  * @author Ben Giddens
  */
-class PartitioningQuerydslAwareRootResourceInformationHandlerMethodArgumentResolver
+public class PartitioningQuerydslAwareRootResourceInformationHandlerMethodArgumentResolver
 		extends RootResourceInformationHandlerMethodArgumentResolver {
 
 	private final Repositories repositories;
