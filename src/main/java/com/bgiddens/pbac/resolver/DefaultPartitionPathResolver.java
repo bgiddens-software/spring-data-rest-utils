@@ -23,10 +23,10 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 	private final PartitionableMetadataService partitionableMetadataService;
 	private final EntityPathResolver entityPathResolver;
 
-	private PathBuilder<Object> buildPartitionExpression(PathBuilder<?> prior, PartitionableMetadata metadata) {
-		final PathBuilder<Object> next = (metadata.getIsCollection())
-				? prior.getCollection(metadata.getQueryPath(), Object.class).any()
-				: prior.get(metadata.getQueryPath(), Object.class);
+	private PathBuilder<?> buildPartitionExpression(PathBuilder<?> prior, PartitionableMetadata metadata) {
+		final PathBuilder<?> next = (metadata.getIsCollection())
+				? prior.getCollection(metadata.getQueryPath(), metadata.getClass()).any()
+				: prior.get(metadata.getQueryPath(), metadata.getClass());
 		return metadata.getNext() == null ? next : buildPartitionExpression(next, metadata.getNext());
 	}
 
@@ -34,7 +34,7 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 		try {
 			final var qEntity = entityPathResolver.createPath(metadata.getParentClass());
 			final var builder = new PathBuilder<>(metadata.getParentClass(), PathMetadataFactory.forDelegate(qEntity));
-			return buildPartitionExpression(builder, metadata);
+			return (SimpleExpression<Object>) buildPartitionExpression(builder, metadata);
 		} catch (IllegalArgumentException e) {
 			return null;
 		}
