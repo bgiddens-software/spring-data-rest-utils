@@ -25,8 +25,8 @@ public class DefaultPartitionPathResolver implements PartitionPathResolver {
 
 	private PathBuilder<?> buildPartitionExpression(PathBuilder<?> prior, PartitionableMetadata metadata) {
 		final PathBuilder<?> next = (metadata.getIsCollection())
-				? prior.getCollection(metadata.getQueryPath(), metadata.getClass()).any()
-				: prior.get(metadata.getQueryPath(), metadata.getClass());
+				? prior.getCollection(metadata.getQueryPath(), metadata.getType()).any()
+				: prior.get(metadata.getQueryPath(), metadata.getType());
 		return metadata.getNext() == null ? next : buildPartitionExpression(next, metadata.getNext());
 	}
 
