@@ -10,6 +10,7 @@ import com.bgiddens.reflection.MethodReflectiveAccessor;
 import com.bgiddens.reflection.ReflectionUtils;
 import com.bgiddens.reflection.ReflectiveAccessor;
 import com.mysema.commons.lang.Pair;
+import org.jspecify.annotations.Nullable;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -38,30 +39,33 @@ public class CachingPartitionableMetadataService implements PartitionableMetadat
 
 	private final PartitionableClassScanner scanner;
 	private final PartitionResolverConfig partitionResolverConfig;
-	private final Map<Class<?>, Map<String, Set<PartitionableMetadata>>> cache = new HashMap<>();
+	private final Map<String, Map<Class<?>, Set<PartitionableMetadata>>> cache = new HashMap<>();
 
 	@Override
 	public Set<PartitionableMetadata> getMetadataFor(Class<?> clazz, String basis) {
-		return (cache.containsKey(clazz)) ? cache.get(clazz).getOrDefault(basis, null) : null;
+		return (cache.containsKey(basis)) ? cache.get(basis).getOrDefault(clazz, null) : null;
 	}
 
 	public void cachePartitionableObjects() throws PartitionConfigurationException {
-		Arrays.stream(scanner.getPartitionableClasses()).forEach(clazz -> traverse(clazz, 0, null));
+		Arrays.stream(scanner.getPartitionableClasses()).forEach(clazz -> traverse(clazz, 0, null, null));
 	}
 
-	private void traverse(Class<?> clazz, int depth, PartitionableMetadata parent) {
+	private void traverse(Class<?> clazz, int depth, PartitionableMetadata parent, @Nullable String basis) {
 		if (depth > partitionResolverConfig.getMaxDepth()) {
 			throw new PartitionConfigurationException(String.format("Exceeded maximum partition depth (%s)", depth));
 		} else {
-			cache.putIfAbsent(clazz, new HashMap<>());
-			getPartitionableMetadata(clazz).forEach((basis, metadataList) -> {
+			getPartitionableMetadata(clazz).forEach((b, metadataList) -> {
+				if (basis != null && !Objects.equals(basis, b)) {
+					return;
+				}
+				cache.putIfAbsent(b, new HashMap<>());
 				metadataList.forEach(metadata -> {
-					if (Optional.ofNullable(parent).map(p -> Objects.equals(basis, p.getBasis())).orElse(false)) {
+					if (Optional.ofNullable(parent).map(p -> Objects.equals(b, p.getBasis())).orElse(false)) {
 						parent.setNext(metadata);
 					}
-					traverse(metadata.getType(), depth + 1, metadata);
+					traverse(metadata.getType(), depth + 1, metadata, b);
 				});
-				cache.get(clazz).put(basis, new HashSet<>(metadataList));
+				cache.get(b).put(clazz, new HashSet<>(metadataList));
 			});
 		}
 	}
