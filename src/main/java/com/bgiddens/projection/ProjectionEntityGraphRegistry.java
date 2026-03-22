@@ -4,5 +4,5 @@ import org.springframework.data.jpa.repository.query.JpaEntityGraph;
 
 public interface ProjectionEntityGraphRegistry {
 
-    JpaEntityGraph getEntityGraphForProjection(Class<?> domainType, Class<?> projectionType);
+	JpaEntityGraph getEntityGraphForProjection(Class<?> domainType, Class<?> projectionType);
 }

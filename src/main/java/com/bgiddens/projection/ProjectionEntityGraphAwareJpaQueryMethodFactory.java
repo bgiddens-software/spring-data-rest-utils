@@ -13,19 +13,29 @@ import java.lang.reflect.Method;
 
 public class ProjectionEntityGraphAwareJpaQueryMethodFactory implements JpaQueryMethodFactory {
 
-    private final QueryExtractor extractor;
-    private final ProjectionEntityGraphRegistry projectionEntityGraphRegistry;
+	private final QueryExtractor extractor;
+	private final ProjectionEntityGraphRegistry projectionEntityGraphRegistry;
+	private final ProjectionContextProvider projectionContextProvider;
 
-    public ProjectionEntityGraphAwareJpaQueryMethodFactory(QueryExtractor extractor, ProjectionEntityGraphRegistry projectionEntityGraphRegistry) {
-        Assert.notNull(extractor, "QueryExtractor must not be null");
-        this.extractor = extractor;
-        this.projectionEntityGraphRegistry = projectionEntityGraphRegistry;
-    }
+	public ProjectionEntityGraphAwareJpaQueryMethodFactory(QueryExtractor extractor,
+			ProjectionEntityGraphRegistry projectionEntityGraphRegistry,
+			ProjectionContextProvider projectionContextProvider) {
+		Assert.notNull(extractor, "QueryExtractor must not be null");
+		this.extractor = extractor;
+		this.projectionEntityGraphRegistry = projectionEntityGraphRegistry;
+		this.projectionContextProvider = projectionContextProvider;
+	}
 
-    @Override
-    @NonNull
-    public JpaQueryMethod build(@NonNull Method method, @NonNull RepositoryMetadata metadata, @NonNull ProjectionFactory factory) {
-        // todo - get the projection from the request parameter
-        return new DynamicEntityGraphJpaQueryMethod(method, metadata, factory, extractor, projectionEntityGraphRegistry.getEntityGraphForProjection(metadata.getDomainType(), method.getReturnType()));
-    }
+	@Override
+	@NonNull
+	public JpaQueryMethod build(@NonNull Method method, @NonNull RepositoryMetadata metadata,
+			@NonNull ProjectionFactory factory) {
+		final var projectionClass = projectionContextProvider.getCurrentProjection(metadata.getDomainType());
+		if (projectionClass != null) {
+			return new DynamicEntityGraphJpaQueryMethod(method, metadata, factory, extractor,
+					projectionEntityGraphRegistry.getEntityGraphForProjection(metadata.getDomainType(), projectionClass));
+		} else {
+			return new JpaQueryMethod(method, metadata, factory, extractor);
+		}
+	}
 }
