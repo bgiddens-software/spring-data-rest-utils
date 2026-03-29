@@ -2,6 +2,7 @@ package com.bgiddens.impl.entities;
 
 import com.bgiddens.pbac.Partitionable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,12 +29,12 @@ public class User {
 
 	@NonNull private String principal;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@Partitionable(basis = "department") private Set<UserDepartment> accessUserDepartments;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@Partitionable(basis = "region") private Set<UserRegion> accessUserRegions;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
 	@Partitionable(basis = "country") private Set<UserCountry> accessUserCountries;
 }

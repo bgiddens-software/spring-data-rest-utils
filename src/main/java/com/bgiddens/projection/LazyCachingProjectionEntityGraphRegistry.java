@@ -1,5 +1,6 @@
 package com.bgiddens.projection;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.query.JpaEntityGraph;
 
 import java.util.HashMap;
@@ -12,14 +13,14 @@ import java.util.Map;
 public class LazyCachingProjectionEntityGraphRegistry implements ProjectionEntityGraphRegistry {
 
 	private final ProjectionEntityGraphFactory projectionEntityGraphFactory;
-	private final Map<Class<?>, JpaEntityGraph> cache = new HashMap<>();
+	private final Map<Class<?>, EntityGraph> cache = new HashMap<>();
 
 	public LazyCachingProjectionEntityGraphRegistry(ProjectionEntityGraphFactory projectionEntityGraphFactory) {
 		this.projectionEntityGraphFactory = projectionEntityGraphFactory;
 	}
 
 	@Override
-	public JpaEntityGraph getEntityGraphForProjection(Class<?> domainType, Class<?> projectionType) {
+	public EntityGraph getEntityGraphForProjection(Class<?> domainType, Class<?> projectionType) {
 		if (this.cache.containsKey(projectionType)) {
 			return this.cache.get(projectionType);
 		} else {
