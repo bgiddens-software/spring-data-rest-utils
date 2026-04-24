@@ -1,45 +1,31 @@
 package com.bgiddens.projection;
 
-import com.bgiddens.impl.entities.Country;
 import com.bgiddens.impl.entities.Department;
-import com.bgiddens.impl.entities.Employee;
-import com.bgiddens.impl.entities.Region;
 import com.bgiddens.impl.entities.User;
-import com.bgiddens.impl.entities.UserCountry;
 import com.bgiddens.impl.entities.UserDepartment;
-import com.bgiddens.impl.entities.UserRegion;
-import com.bgiddens.impl.repos.CountryRepo;
 import com.bgiddens.impl.repos.DepartmentRepo;
-import com.bgiddens.impl.repos.EmployeeRepo;
-import com.bgiddens.impl.repos.RegionRepo;
-import com.bgiddens.impl.repos.UserCountryRepo;
 import com.bgiddens.impl.repos.UserDepartmentRepo;
-import com.bgiddens.impl.repos.UserRegionRepo;
 import com.bgiddens.impl.repos.UserRepo;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * This test case contains no assertions because doing so would couple it strongly to the underlying database adapter.
+ * It is therefore disabled by default. It can nonetheless be used manually with settings to show generated SQL to
+ * demonstrate that enabling this package's projection entity graph features results in improved query structure based
+ * on the requested projection.
+ */
+// @Disabled
 @SpringBootTest
 @AutoConfigureMockMvc
 @WithMockUser(username = "testUser", roles = "ADMIN")
@@ -90,6 +76,6 @@ class ProjectionEntityGraphTest {
 
 	@Test
 	void testFetchGraph() throws Exception {
-		mockMvc.perform(get("/users?projection=userWithDepartments")).andDo(print()).andExpect(status().is2xxSuccessful());
+		mockMvc.perform(get("/users?projection=userWithDepartments")).andExpect(status().is2xxSuccessful());
 	}
 }
