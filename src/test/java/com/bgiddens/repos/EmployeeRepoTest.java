@@ -16,6 +16,7 @@ import com.bgiddens.impl.repos.UserCountryRepo;
 import com.bgiddens.impl.repos.UserDepartmentRepo;
 import com.bgiddens.impl.repos.UserRegionRepo;
 import com.bgiddens.impl.repos.UserRepo;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -91,6 +92,14 @@ class EmployeeRepoTest {
 		employeeRepo.save(employeeAlice);
 		employeeRepo.save(employeeBob);
 		employeeRepo.save(employeeCharlie);
+	}
+
+	@AfterAll
+	void cleanup() {
+		employeeRepo.deleteAll();
+		departmentRepo.deleteAll();
+		countryRepo.deleteAll();
+		regionRepo.deleteAll();
 	}
 
 	static Stream<Arguments> testCollectionFilteringArguments() {

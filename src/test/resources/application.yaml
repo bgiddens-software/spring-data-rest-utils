@@ -15,6 +15,8 @@ bgiddens:
   sdr:
     pbac:
       check-delete: true
+#    projection-entity-graphs:
+#      enabled: false
   partitions:
     resolver:
       packages: com.bgiddens.impl.entities

@@ -1,2 +1,3 @@
 com.bgiddens.sdr.config.RepositoryAutoConfiguration
 com.bgiddens.sdr.config.PBACAutoConfiguration
+com.bgiddens.sdr.config.ProjectionEntityGraphConfig
